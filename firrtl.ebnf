@@ -1,0 +1,79 @@
+top = "circuit", ":", {mod}
+mod = "module", identifier, ":", {direction, ":", identifier, type}, expr, {expr}
+expr = connect
+     | partial_connect
+     | skip
+     | invalidate
+
+direction = "input" | "output"
+
+; Types
+;; All types
+type = ground_type
+     | vector_type
+     | bundle_type
+;; Type of ground types
+ground_type = ground_type_UInt
+	    | ground_type_UInt
+	    | ground_type_Fixed
+	    | ground_type_Clock
+	    | ground_type_Analog
+
+;; Ground types
+ground_type_UInt = "UInt", [type_width]
+ground_type_SInt = "SInt", [type_width]
+ground_type_Fixed = "Fixed", [type_width][("<", type_width, ">")] ; width and bits after binary point for Fixed
+ground_type_Clock = "Clock"
+ground_type_Analog = "Analog", [type_width]
+
+;; Width used in types
+type_width = "<", posnum, ">"
+
+; Aggregate types
+vector_type = ground_type, {("[", {posnum}, "]")}
+bundle_type = "{", bundle_elem, ["," {bundle_elem, ","}], "}"
+
+;; single eelement of a bundle
+bundle_elem = identifier, ":", type
+
+
+; Statements
+statement = connect
+	  | partial_connect
+	  | skip
+	  | invalidate
+	  | attach
+	  | conditional
+
+connect = identifier, "<=", identifier ; TODO add subfields and subindexes
+partial_connect = identifier, "<-", identifier ; TODO add subfields and subindexes
+skip = "skip"
+invalidate = identifier, "is", "invalid" ;; TODO add subfields and subindexes
+attach = "attach", "(", identifier, ",", identifier, { ",", identifier }, ")" ;; spec says "0 or more times"?
+
+;; FIXME "statement" here is probably not quite right since a conditional cannot be substituted here.
+;; TODO for when x is x only identifier, or a statement or component or something else?
+conditional = "when", identifier, ":", statement, { statement | ("else", (statement | skip)) | ("else when", identifier, ":", (statement | skip)) }
+
+
+; Components
+wire = "wire", identifier, ":", ground_type ; TODO is this ground type?
+register = "reg", "identifier", ":", ground_type, identifier, ["with", ":", ???] ; TODO add the reset logic
+node = "node", identifier, "=", ??? ; TODO
+
+
+; Basic terminals
+identifier = letter , { letter | digit | "_" }
+posnum = digit, {digit}
+negnum = "-", digit, {digit}
+num = posnum | negnum
+letter = "A" | "B" | "C" | "D" | "E" | "F" | "G"
+       | "H" | "I" | "J" | "K" | "L" | "M" | "N"
+       | "O" | "P" | "Q" | "R" | "S" | "T" | "U"
+       | "V" | "W" | "X" | "Y" | "Z" | "a" | "b"
+       | "c" | "d" | "e" | "f" | "g" | "h" | "i"
+       | "j" | "k" | "l" | "m" | "n" | "o" | "p"
+       | "q" | "r" | "s" | "t" | "u" | "v" | "w"
+       | "x" | "y" | "z" ;
+digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+
