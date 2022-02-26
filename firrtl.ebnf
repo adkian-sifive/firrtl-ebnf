@@ -7,37 +7,37 @@ expr = connect
 
 direction = "input" | "output"
 
-; Types
-;; All types
+(* Types *)
+(* All types *)
 type = ground_type
      | vector_type
      | bundle_type
-;; Type of ground types
+(* Type of ground types *)
 ground_type = ground_type_UInt
 	    | ground_type_UInt
 	    | ground_type_Fixed
 	    | ground_type_Clock
 	    | ground_type_Analog
 
-;; Ground types
+(* Ground types *)
 ground_type_UInt = "UInt", [type_width]
 ground_type_SInt = "SInt", [type_width]
-ground_type_Fixed = "Fixed", [type_width][("<", type_width, ">")] ; width and bits after binary point for Fixed
+ground_type_Fixed = "Fixed", [type_width][("<", type_width, ">")] (* width and bits after binary point for Fixed *)
 ground_type_Clock = "Clock"
 ground_type_Analog = "Analog", [type_width]
 
-;; Width used in types
+(* Width used in types *)
 type_width = "<", posnum, ">"
 
-; Aggregate types
+(* Aggregate types *)
 vector_type = ground_type, {("[", {posnum}, "]")}
 bundle_type = "{", bundle_elem, ["," {bundle_elem, ","}], "}"
 
-;; single eelement of a bundle
+(* single eelement of a bundle *)
 bundle_elem = identifier, ":", type
 
 
-; Statements
+(* Statements *)
 statement = connect
 	  | partial_connect
 	  | skip
@@ -45,24 +45,24 @@ statement = connect
 	  | attach
 	  | conditional
 
-connect = identifier, "<=", identifier ; TODO add subfields and subindexes
-partial_connect = identifier, "<-", identifier ; TODO add subfields and subindexes
+connect = identifier, "<=", identifier (* TODO add subfields and subindexes *)
+partial_connect = identifier, "<-", identifier (* TODO add subfields and subindexes *)
 skip = "skip"
-invalidate = identifier, "is", "invalid" ;; TODO add subfields and subindexes
-attach = "attach", "(", identifier, ",", identifier, { ",", identifier }, ")" ;; spec says "0 or more times"?
+invalidate = identifier, "is", "invalid" (* TODO add subfields and subindexes *)
+attach = "attach", "(", identifier, ",", identifier, { ",", identifier }, ")" (* spec says "0 or more times"? *)
 
-;; FIXME "statement" here is probably not quite right since a conditional cannot be substituted here.
-;; TODO for when x is x only identifier, or a statement or component or something else?
+(* FIXME "statement" here is probably not quite right since a conditional cannot be substituted here. *)
+(* TODO for when x is x only identifier, or a statement or component or something else? *)
 conditional = "when", identifier, ":", statement, { statement | ("else", (statement | skip)) | ("else when", identifier, ":", (statement | skip)) }
 
 
-; Components
-wire = "wire", identifier, ":", ground_type ; TODO is this ground type?
-register = "reg", "identifier", ":", ground_type, identifier, ["with", ":", ???] ; TODO add the reset logic
-node = "node", identifier, "=", ??? ; TODO
+(* Components *)
+wire = "wire", identifier, ":", ground_type (* TODO is ground type here correct? *)
+register = "reg", "identifier", ":", ground_type, identifier, ["with", ":", ???] (* TODO add the reset logic *)
+node = "node", identifier, "=", ??? (* TODO *)
 
 
-; Basic terminals
+(* Basic terminals *)
 identifier = letter , { letter | digit | "_" }
 posnum = digit, {digit}
 negnum = "-", digit, {digit}
